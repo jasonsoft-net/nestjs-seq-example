@@ -4,9 +4,9 @@
   <a href="https://datalust.co/" target="blank"><img src="https://datalust.co/img/seq-logo-dark.svg" height="120"  alt="datalust Logo" /></a>
 </p>
 
-# Example for @jasonsoft/nestjs-seq
+# Example for @jasonsoft/nestjs-seq 🍐
 
-Seq logging module for Nest framework (node.js) 🐷
+Seq logging module for Nest framework (node.js)
 
 [![NPM version][npm-img]][npm-url]
 [![NPM Downloads][downloads-image]][npm-url]
