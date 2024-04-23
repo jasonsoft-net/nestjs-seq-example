@@ -1,8 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 /**
- * import the SeqLogger
- * Added by Jason.Song (成长的小猪) on 2021/09/08
+ * Import the SeqLogger for structured logging.
+ * This logger allows for easy tracking and querying of log data.
+ * Updated by Jason.Song (成长的小猪) on 2024/04/21
+ * Added by Jason.Song (成长的小猪) on 2021/09/08.
  */
 import { SeqLogger } from '@jasonsoft/nestjs-seq';
 
@@ -10,9 +12,10 @@ import { SeqLogger } from '@jasonsoft/nestjs-seq';
 export class AppController {
   constructor(
     /**
-     * Inject the Seq Logger service
-     * We can also inject SeqLogger into controllers.
-     * Added by Jason.Song (成长的小猪) on 2021/09/08
+     * Inject the Seq Logger service for structured logging.
+     * This service provides methods to log various levels of information (info, debug, error).
+     * Updated by Jason.Song (成长的小猪) on 2024/04/21
+     * Added by Jason.Song (成长的小猪) on 2021/09/08.
      */
     private readonly logger: SeqLogger,
     private readonly appService: AppService,
@@ -20,20 +23,30 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    this.logger.info('getHello - start');
+    this.logger.info('getHello - start', AppController.name);
 
     const result = this.appService.getHello();
-    this.logger.info('getHello - call {service}', {
-      service: 'appService',
-      result,
-      remark: 'Record the returned result',
-    });
+    this.logger.debug(
+      `Retrieving result from {name}`,
+      {
+        name: 'AppService',
+        result,
+        note: 'The message template function is used here',
+      },
+      AppController.name,
+    );
 
     try {
-      throw new Error('Wow, I reported an error');
-    } catch (error) {
-      this.logger.error('Record the error', error);
+      throw new Error('Oops! Something whimsically wrong just happened!');
+    } catch (error: any) {
+      this.logger.error(error, AppController.name);
+      this.logger.error(
+        'The error has been successfully captured and handled!',
+        error,
+        AppController.name,
+      );
+
+      return result;
     }
-    return result;
   }
 }

@@ -1,52 +1,65 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+
+// Import ConfigModule to manage application configuration through environment variables.
+import { ConfigModule, ConfigService } from '@nestjs/config';
 /**
- * Import the SeqLoggerModule into the root AppModule
+ * Import the SeqLoggerModule into the root AppModule to enable centralized logging.
+ * This module is configured to connect to a Seq server for log aggregation and analysis,
+ * facilitating effective monitoring and debugging by collecting and storing logs.
+ * Updated by Jason.Song (成长的小猪) on 2024/04/21
  * Added by Jason.Song (成长的小猪) on 2021/09/08
  */
 import { SeqLoggerModule } from '@jasonsoft/nestjs-seq';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    // /**
-    //  * We can import the SeqLoggerModule. Typically, we'll import it into the root AppModule and control its behavior using the .forRoot() static method.
-    //  * Added by Jason.Song (成长的小猪) on 2021/09/08
-    //  */
+    /**
+     * Import and configure the SeqLoggerModule using the .forRoot() method.
+     * This method initializes the module with server-specific configurations,
+     * allowing for centralized management of log data across the application.
+     * Updated by Jason.Song (成长的小猪) on 2024/04/21
+     * Added by Jason.Song (成长的小猪) on 2021/09/08
+     */
     // SeqLoggerModule.forRoot({
-    //   /** Customize a log name to facilitate log filtering */
-    //   serviceName: 'product-service',
-    //   /** The HTTP endpoint address of the Seq server */
+    //   /** Specifies the URL of the Seq server to which logs should be sent. */
     //   serverUrl: 'http://localhost:5341',
-    //   /** The API Key to use when connecting to Seq */
+    //   /** Provides the API Key required for authenticating with the Seq server. */
     //   apiKey: 'K7iUhZ9OSp6oX5EOCfPt',
-    //   /**
-    //    * Use module globally
-    //    * When you want to use SeqLoggerModule in other modules,
-    //    * you'll need to import it (as is standard with any Nest module).
-    //    * Alternatively, declare it as a global module by setting the options object's isGlobal property to true, as shown below.
-    //    * In that case, you will not need to import SeqLoggerModule in other modules once it's been loaded in the root module
-    //    */
-    //   isGlobal: true,
+    //   /** Optional additional metadata properties */
+    //   extendMetaProperties: {
+    //     /** Defines a custom service name for the logs, aiding in their categorization and filtering.
+    //      * This name helps in identifying logs related to this service in a mixed-service environment.
+    //      */
+    //     serviceName: 'product-service',
+    //   },
+    //   /** For additional properties and configuration options, refer to the SEQ_LOGGER_OPTIONS.md document and the following link: */
+    //   /** [Seq Logger Options Documentation](https://github.com/jasonsoft/nestjs-seq/blob/v2.x.x/SEQ_LOGGER_OPTIONS.md) */
     // }),
 
     /**
-     * Async configuration
-     * When you need to pass module options asynchronously instead of statically, use the forRootAsync() method.
-     * Like other factory providers, our factory function can be async and can inject dependencies through inject.
+     * Asynchronously configure the SeqLoggerModule using the forRootAsync() method.
+     * This method allows module options to be passed asynchronously, leveraging factory providers
+     * that can be asynchronous and inject dependencies such as ConfigService.
+     * Updated by Jason.Song (成长的小猪) on 2024/04/21
      * Added by Jason.Song (成长的小猪) on 2021/10/20 11:30:45
      */
     SeqLoggerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        /** Customize a log name to facilitate log filtering */
-        serviceName: configService.get('SEQ_SERVICE_NAME'),
-        /** The HTTP endpoint address of the Seq server */
+        /** Specifies the HTTP endpoint address of the Seq server for log transmission. */
         serverUrl: configService.get('SEQ_SERVER_URL'),
-        /** The API Key to use when connecting to Seq */
+        /** Provides the API Key required for authenticating with the Seq server. */
         apiKey: configService.get('SEQ_API_KEY'),
+        /** Optional additional metadata properties to enhance log categorization and filtering. */
+        extendMetaProperties: {
+          /** Custom service name for the logs to assist in their categorization and filtering within a multi-service environment. */
+          serviceName: configService.get('SEQ_SERVICE_NAME'),
+        },
+        /** For additional properties and configuration options, refer to the SEQ_LOGGER_OPTIONS.md document and the following link: */
+        /** [Seq Logger Options Documentation](https://github.com/jasonsoft/nestjs-seq/blob/v2.x.x/SEQ_LOGGER_OPTIONS.md) */
       }),
       inject: [ConfigService],
     }),
